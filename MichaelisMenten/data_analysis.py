@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import file_interpreter
+from MichaelisMenten import file_interpreter
 import scipy 
 import os
 # functions below originally from other_functions.py
