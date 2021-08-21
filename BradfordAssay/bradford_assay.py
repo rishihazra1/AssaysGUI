@@ -1,6 +1,6 @@
 import baseline
 from input_validation import get_y_or_no, get_float
-import bradford_statistics
+import simple_statistics
 import math
 
 path = baseline.set_default_baseline()
@@ -26,7 +26,7 @@ else:
 dilution_factor = (protein_used/20)*dilution
 # print("dilution factor: " + str(dilution_factor))
 
-a, b, c = bradford_statistics.get_best_fit_line(x_terms, y_terms)  # values generated through numpy polyfit
+a, b, c = simple_statistics.get_best_fit_line(x_terms, y_terms)  # values generated through numpy polyfit
 
 '''
 a = -0.506713304184884  # values from Excel LINEST function
@@ -34,7 +34,7 @@ b = 1.773611242973140
 c = 0.002712554653342
 '''
 
-r_squared = bradford_statistics.get_r_squared(x_terms, y_terms, a, b, c)
+r_squared = simple_statistics.get_r_squared(x_terms, y_terms, a, b, c)
 print("a = " + str(a) + "\nb = " + str(b) + "\nc = " + str(c))
 
 index = 0
