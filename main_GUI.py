@@ -86,17 +86,28 @@ class BradfordAssay(tk.Frame):
         absorption_label = tk.Label(self, text="Enter Absorption: ", font=("Helevicta", 17))
         absorption_label.pack()
         absorption_input.pack(pady=5)
-        run_ba = tk.Button(self, text="Get Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: BradfordAssay.internal_bradford_assay(self, absorption_input.get(), output_text))
-        run_ba.pack(pady=10)        
         output_text = tk.Label(self, text="", font=("Helevicta", 14))
-        output_text.pack()
+        run_ba = tk.Button(self, text="Get Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: BradfordAssay.internal_bradford_assay(self, protein_amount_input.get(), dilution_input.get(), absorption_input.get(), output_text))
+        run_ba.pack(pady=10)  
+        output_text.pack()      
+        
 
         
-    def internal_bradford_assay(master, absorption, output_text):        
+    def internal_bradford_assay(master, protein_used, dilution, absorption, output_text):
+        try:
+            protein_used = float(protein_used)
+        except ValueError:
+            print("ERROR -- protein_amount")
+            output_text.configure(text="Invalid protein amount entered. Try again.")
+        try:
+            dilution = float(dilution)
+        except ValueError:
+            print("ERROR -- dilution")
+            output_text.configure(text="Invalid dilution entered. Try again.")        
         baselines = [['20', '0', '1.000', '1.258', '1.155'], ['15', '5', '0.750', '1.083', '1.098'], ['10', '10', '0.500', '0.728', '0.713'], ['5', '15', '0.250', '0.422', '0.402'], ['2.5', '17.5', '0.125', '0.223', '0.214'], ['0', '20', '0.000', '0', '-0.005']]
+        print("protein_used: " + str(protein_used))
+        print("dilution: " + str(dilution))
         x_terms, y_terms = baseline.calculate_baselines(baselines)
-        protein_used = 5
-        dilution = 0.1
         dilution_factor = (protein_used/20)*dilution
         a, b, c = simple_statistics.get_best_fit_line(x_terms, y_terms)  # values generated through numpy polyfit
         r_squared = simple_statistics.get_r_squared(x_terms, y_terms, a, b, c)
@@ -106,8 +117,8 @@ class BradfordAssay(tk.Frame):
             print("protein concentration (mg/mL): " + str(concentration))
             output_text.configure(text=str(absorption) + "A →  " + str(concentration) + " mg/mL")     
         except ValueError:
-            print("ERROR")
-            output_text.configure(text="Invalid input. Try again.")     
+            print("ERROR -- absorbance")
+            output_text.configure(text="Invalid absorption. Try again.")     
         
 
     
