@@ -20,7 +20,7 @@ def get_int(input_prompt):
             ValueError
             print("Invalid input. Enter valid input of type: " + "int")
             
-def get_y_or_no(input_prompt):
+def get_y_or_n(input_prompt):
     while True:
         inupt_holder = input(input_prompt + " (y/n)\n")
         if inupt_holder == "y" or inupt_holder == "n":

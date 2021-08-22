@@ -1,7 +1,8 @@
 import tkinter as tk
 import tkinter.font
-from BradfordAssay import bradford_assay
-from MichaelisMenten import michaelis_menten_plotter
+import tkinter.tix
+import bradford_assay
+import michaelis_menten_plotter
 class SampleApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -54,7 +55,7 @@ class MichaelisMenten(tk.Frame):
         home_button = tk.Button(self, text="HOME",
                            command=lambda: controller.show_frame("Home"))
         home_button.pack()
-        run_mm_plotter = tk.Button(self, text="Start Michaelis-Menten Assay Calculator", command=michaelis_menten_plotter.michaelis_menten)
+        run_mm_plotter = tk.Button(self, text="Start Michaelis-Menten Assay Calculator", command=lambda: michaelis_menten_plotter.michaelis_menten)
         run_mm_plotter.pack()
 
 class BradfordAssay(tk.Frame):
@@ -64,10 +65,13 @@ class BradfordAssay(tk.Frame):
         self.controller = controller
         label = tk.Label(self, text="Bradford Assay", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
-        button = tk.Button(self, text="HOME",
+        home_button = tk.Button(self, text="HOME",
                            command=lambda: controller.show_frame("Home"))
-        button.pack()
-        run_ba = tk.Button(self, text="Bradford Assay: Find Protein Concentration", command=bradford_assay.bradford_assay)
+        home_button.pack()
+        tk.Label(self, text="Absorption: ")
+        absorption_input = tk.Entry(self)
+        absorption_input.pack()
+        run_ba = tk.Button(self, text="Bradford Assay: Find Protein Concentration", command=lambda: bradford_assay.bradford_assay(absorption_input.get()))
         run_ba.pack()
 
 if __name__ == "__main__":
