@@ -2,9 +2,9 @@ import bradford_baseline as baseline
 import input_validation 
 import simple_statistics
 import math
-import tkinter
+import tkinter as tk
 
-def bradford_assay(absorption):
+def bradford_assay(master, absorption):
     print("absorption: " + str(absorption))
     path = baseline.set_default_baseline()
     '''
@@ -44,7 +44,14 @@ def bradford_assay(absorption):
 
     r_squared = simple_statistics.get_r_squared(x_terms, y_terms, a, b, c)
     print("a = " + str(a) + "\nb = " + str(b) + "\nc = " + str(c))
-    concentration = ((-b + math.sqrt(b**2 - 4*a*c + 4*a*float(absorption)))/(2*a))/dilution_factor
-    print("protein concentration (mg/mL): " + str(concentration))
+    while True:
+        try:   
+            concentration = ((-b + math.sqrt(b**2 - 4*a*c + 4*a*float(absorption)))/(2*a))/dilution_factor
+            print("protein concentration (mg/mL): " + str(concentration))
+            return concentration
+        except:
+            ValueError
+            error_message = tk.Label(master, text="Invalid input, try again.")
+            error_message.pack()
             
-    return concentration
+    

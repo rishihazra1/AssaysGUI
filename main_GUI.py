@@ -10,7 +10,7 @@ import bradford_baseline as baseline
 class SampleApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        self.title_font = tkinter.font.Font(family='Helvetica', size=18, weight="bold", slant="italic")
+        self.title_font = tkinter.font.Font(family='Helvetica', size=30, weight="bold", slant="italic")
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
@@ -39,14 +39,14 @@ class Home(tk.Frame):
 
         mm_btn = tk.Button(self, text="Michaelis-Menten", 
                             command=lambda: controller.show_frame("MichaelisMenten"), 
-                            fg='blue', height=10, width=50, compound="c")  # mm = michaelis-menten
+                            fg='blue', bg='light grey', height=3, width=20, compound="c", font=("Helevicta", 30))  # mm = michaelis-menten
         mm_btn.place(x=400, y=450)
         ba_btn = tk.Button(self, text="Bradford Assay",
                             command=lambda: controller.show_frame("BradfordAssay"), 
-                            fg='purple', height=10, width=50, compound="c")  # ba = bradford assay
-        ba_btn.place(x=400, y=150)
-        mm_btn.pack()
-        ba_btn.pack()
+                            fg='purple', bg='light grey', height=3, width=20, compound="c", font=("Helevicta", 30))  # ba = bradford assay
+        ba_btn.place(x=400, y=100)
+        mm_btn.pack(pady=20)
+        ba_btn.pack(pady=15)
 
 
 class MichaelisMenten(tk.Frame):
@@ -55,10 +55,10 @@ class MichaelisMenten(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         label = tk.Label(self, text="Michaelis-Menten", font=controller.title_font)
-        label.pack(side="top", fill="x", pady=10)
+        label.pack(side="top", fill="x", pady=25)
         home_button = tk.Button(self, text="HOME",
-                           command=lambda: controller.show_frame("Home"))
-        home_button.pack()
+                           command=lambda: controller.show_frame("Home"), bg="sky blue", fg="black", font=("Helevicta", 15))
+        home_button.place(height=75, width=75)
         run_mm_plotter = tk.Button(self, text="Start Michaelis-Menten Assay Calculator", command=lambda: michaelis_menten_plotter.michaelis_menten)
         run_mm_plotter.pack()
 
@@ -70,22 +70,36 @@ class BradfordAssay(tk.Frame):
         label = tk.Label(self, text="Bradford Assay", font=controller.title_font)
         label.pack(side="top", fill="x", pady=100)
         home_button = tk.Button(self, text="HOME",
-                           command=lambda: controller.show_frame("Home"))
-        home_button.pack()
+                           command=lambda: controller.show_frame("Home"), bg="sky blue", fg="black", font=("Helevicta", 15))
+        home_button.place(height=75, width=75)
         
-        absorption_input = tk.Entry(self)
-        absorption_label = tk.Label(self, text="Enter Absorption: ", font="Georgia")
-        absorption_label.pack()
-        absorption_input.pack()
-        run_ba = tk.Button(self, text="Get Protein Concentration", command=lambda: BradfordAssay.internal_bradford_assay(self, absorption_input.get()))
-        run_ba.pack()
+        absorption_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17))
+        absorption_label = tk.Label(self, text="Enter Absorption: ", font=("Helevicta", 17))
+        absorption_label.pack(pady=5)
+        absorption_input.pack(pady=5)
+        run_ba = tk.Button(self, text="Get Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: BradfordAssay.internal_bradford_assay(self, absorption_input.get()))
+        run_ba.pack(pady=10)
         
 
         
 
     def internal_bradford_assay(master, absorption):        
-        concentration = bradford_assay.bradford_assay(absorption)
-        concentration_text = tk.Label(master, text="Concentration at " + str(absorption) + "A = " + str(concentration) + " mg/mL")
+        baselines = [['20', '0', '1.000', '1.258', '1.155'], ['15', '5', '0.750', '1.083', '1.098'], ['10', '10', '0.500', '0.728', '0.713'], ['5', '15', '0.250', '0.422', '0.402'], ['2.5', '17.5', '0.125', '0.223', '0.214'], ['0', '20', '0.000', '0', '-0.005']]
+        x_terms, y_terms = baseline.calculate_baselines(baselines)
+        protein_used = 5
+        dilution = 0.1
+        dilution_factor = (protein_used/20)*dilution
+        a, b, c = simple_statistics.get_best_fit_line(x_terms, y_terms)  # values generated through numpy polyfit
+        r_squared = simple_statistics.get_r_squared(x_terms, y_terms, a, b, c)
+        print("a = " + str(a) + "\nb = " + str(b) + "\nc = " + str(c))
+        try:   
+            concentration = ((-b + math.sqrt(b**2 - 4*a*c + 4*a*float(absorption)))/(2*a))/dilution_factor
+            print("protein concentration (mg/mL): " + str(concentration))
+        except ValueError:
+            print("ERROR")
+            error_message = tk.Label(master, text="Invalid input, try again.")
+            error_message.pack()      
+        concentration_text = tk.Label(master, text="Concentration at " + str(absorption) + "A = " + str(concentration) + " mg/mL", font=("Helevicta", 14))
         concentration_text.pack()
 
     
