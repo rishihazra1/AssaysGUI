@@ -3,6 +3,10 @@ import tkinter.font
 import tkinter.tix
 import bradford_assay
 import michaelis_menten_plotter
+import simple_statistics
+import math
+import bradford_baseline as baseline
+
 class SampleApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -64,15 +68,27 @@ class BradfordAssay(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         label = tk.Label(self, text="Bradford Assay", font=controller.title_font)
-        label.pack(side="top", fill="x", pady=10)
+        label.pack(side="top", fill="x", pady=100)
         home_button = tk.Button(self, text="HOME",
                            command=lambda: controller.show_frame("Home"))
         home_button.pack()
-        tk.Label(self, text="Absorption: ")
+        
         absorption_input = tk.Entry(self)
+        absorption_label = tk.Label(self, text="Enter Absorption: ", font="Georgia")
+        absorption_label.pack()
         absorption_input.pack()
-        run_ba = tk.Button(self, text="Bradford Assay: Find Protein Concentration", command=lambda: bradford_assay.bradford_assay(absorption_input.get()))
+        run_ba = tk.Button(self, text="Get Protein Concentration", command=lambda: BradfordAssay.internal_bradford_assay(self, absorption_input.get()))
         run_ba.pack()
+        
+
+        
+
+    def internal_bradford_assay(master, absorption):        
+        concentration = bradford_assay.bradford_assay(absorption)
+        concentration_text = tk.Label(master, text="Concentration at " + str(absorption) + "A = " + str(concentration) + " mg/mL")
+        concentration_text.pack()
+
+    
 
 if __name__ == "__main__":
     root = SampleApp()
