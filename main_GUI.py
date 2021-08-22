@@ -1,7 +1,6 @@
 import tkinter as tk
 import tkinter.font
 import tkinter.tix
-import bradford_assay
 import michaelis_menten_plotter
 import simple_statistics
 import math
