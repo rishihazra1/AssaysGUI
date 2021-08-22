@@ -2,9 +2,6 @@ import tkinter as tk
 import tkinter.font
 import michaelis_menten_plotter
 import bradford_assay
-import simple_statistics
-import math
-import bradford_baseline as baseline
 
 class SampleApp(tk.Tk):
     def __init__(self, *args, **kwargs):

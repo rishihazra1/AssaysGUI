@@ -1,8 +1,6 @@
 import bradford_baseline as baseline
-import input_validation 
 import simple_statistics
 import math
-import tkinter as tk
 
 def bradford_assay_main(master, protein_used, dilution, absorption, output_text):
     try:
