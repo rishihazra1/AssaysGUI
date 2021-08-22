@@ -86,13 +86,13 @@ class BradfordAssay(tk.Frame):
         absorption_label = tk.Label(self, text="Enter Absorption: ", font=("Helevicta", 17))
         absorption_label.pack()
         absorption_input.pack(pady=5)
-        run_ba = tk.Button(self, text="Get Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: BradfordAssay.internal_bradford_assay(self, absorption_input.get()))
-        run_ba.pack(pady=10)
-        
+        run_ba = tk.Button(self, text="Get Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: BradfordAssay.internal_bradford_assay(self, absorption_input.get(), output_text))
+        run_ba.pack(pady=10)        
+        output_text = tk.Label(self, text="", font=("Helevicta", 14))
+        output_text.pack()
 
         
-
-    def internal_bradford_assay(master, absorption):        
+    def internal_bradford_assay(master, absorption, output_text):        
         baselines = [['20', '0', '1.000', '1.258', '1.155'], ['15', '5', '0.750', '1.083', '1.098'], ['10', '10', '0.500', '0.728', '0.713'], ['5', '15', '0.250', '0.422', '0.402'], ['2.5', '17.5', '0.125', '0.223', '0.214'], ['0', '20', '0.000', '0', '-0.005']]
         x_terms, y_terms = baseline.calculate_baselines(baselines)
         protein_used = 5
@@ -104,12 +104,11 @@ class BradfordAssay(tk.Frame):
         try:   
             concentration = ((-b + math.sqrt(b**2 - 4*a*c + 4*a*float(absorption)))/(2*a))/dilution_factor
             print("protein concentration (mg/mL): " + str(concentration))
+            output_text.configure(text=str(absorption) + "A →  " + str(concentration) + " mg/mL")     
         except ValueError:
             print("ERROR")
-            error_message = tk.Label(master, text="Invalid input, try again.")
-            error_message.pack()      
-        concentration_text = tk.Label(master, text="Concentration at " + str(absorption) + "A = " + str(concentration) + " mg/mL", font=("Helevicta", 14))
-        concentration_text.pack()
+            output_text.configure(text="Invalid input. Try again.")     
+        
 
     
 
