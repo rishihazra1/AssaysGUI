@@ -1,27 +1,11 @@
 import data_analysis
+import tkinter as tk
 
-def michaelis_menten():
-    while True:
-        try:
-            molar_extinction = float(input("Enter molar extinction coefficient of your substrate.\n"))
-            break
-        except ValueError:
-            print("Input not recognized. Enter the float value.")
-    while True:
-        try:
-            enzyme_concentration = float(input("Enter concentration of your enzyme (in µM).\n"))
-            break
-        except ValueError:
-            print("Input not recognized. Enter the float value.")
-    while True:
-        use_data_tracker = input("Would you like to use the in-built data tracker? (yes/no)\n")
-        if use_data_tracker == "yes" or use_data_tracker == "no":
-            break
-        else:
-            print("Input not recognized. Enter yes or no.")
+def michaelis_menten(master, molar_extinction, enzyme_concentration, use_data_tracker, output_text):
+
     trial_concentrations = []
     number_of_trials = []
-    if use_data_tracker == "no":
+    if use_data_tracker == 0:
         concentrations_run = int(input("How many concentrations did you run trials for?\n"))
         print("Enter the concentrations (in µM) at which you ran trials. Press enter after each value.")
         for t in range(0, concentrations_run):
