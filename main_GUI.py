@@ -5,7 +5,7 @@ import bradford_assay
 
 class SampleApp(tk.Tk):
     def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
+        tk.Tk.__init__( self, *args, **kwargs)
         self.title_font = tkinter.font.Font(family='Helvetica', size=30, weight="bold", slant="italic")
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -73,6 +73,12 @@ class MichaelisMenten(tk.Frame):
         data_tracker_box.pack()
         data_tracker_status.pack()
         output_text = tk.Label(self, text="", font=("Helevicta", 14))
+        data_tracker_box.select()
+        if data_tracker_value.get() == 0:
+            concentrations_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17)) 
+            concentrations_label = tk.Label(self, text="Enter Total Concentrations Run: ", font=("Helevicta", 17))
+            concentrations_label.pack()
+            concentrations_input.pack(pady=5)
         run_mm_plotter = tk.Button(self, text="Start Michaelis-Menten Assay Calculator", bg='light green', font=("Helevicta", 15),
                                      command=lambda: MichaelisMenten.internal_michaelis_menten(self, extinction_input.get(), 
                                      concentration_input.get(), data_tracker_value.get(), output_text))
@@ -105,6 +111,11 @@ class MichaelisMenten(tk.Frame):
                 print("ALSO HERE")
                 output_text.configure(text="Loading In-Built Data Tracker")            
          #   michaelis_menten_plotter.michaelis_menten(master, extinction, concentration, use_data_tracker, output_text)
+        if use_data_tracker == 0:
+            concentrations_run = int(input("How many concentrations did you run trials for?\n"))
+            print("Enter the concentrations (in µM) at which you ran trials. Press enter after each value.")
+            
+       
 
 
 
@@ -137,11 +148,8 @@ class BradfordAssay(tk.Frame):
         run_ba = tk.Button(self, text="Get Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: bradford_assay.bradford_assay_main(self, protein_amount_input.get(), dilution_input.get(), absorption_input.get(), output_text))
         run_ba.pack(pady=10)  
         output_text.pack()   
+        self.entries = []
 
-
-    
- 
-        
 
     
 
