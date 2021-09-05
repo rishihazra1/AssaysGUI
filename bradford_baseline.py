@@ -4,6 +4,7 @@
 # convention: volume BSA, volume water, total volume, concentration BSA, Abs. 1, Abs. 2, Abs. avg;
 # all numbers/positions come from example spreadsheet bradford 7.11.21
 import csv
+import tkinter as tk
 
 fields = ['1 mg/mL BSA (µL)', 'H2O (µL)', 'BSA (mg/mL)', 'A_562 (1)', 'A_562 (2)']  
 calculated_fields = ['Total volume (µL)', 'A_562 (avg)']  #calculated fields: 'Total volume (µL)',  'A_562 (avg.)'
@@ -19,11 +20,12 @@ def get_default_baseline_values():
     return baselines
 
 def save_modified_baseline(rows):
+    
     file_name = "standard_assay.csv" 
     with open(file_name, 'w') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(fields)
-        csvwriter.writerow(baselines)
+        csvwriter.writerow(rows)
     print("Stored at " + str(file_name) + " Ctrl + Click to open.")
     return file_name 
 

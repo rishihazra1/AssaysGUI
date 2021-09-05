@@ -107,7 +107,7 @@ class BradfordAssay(tk.Frame):
         self.entries = []
 
 class BradfordAssayBaseline(tk.Frame):
-
+                   
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -148,30 +148,64 @@ class BradfordAssayBaseline(tk.Frame):
             columnCount+=1
 
         default_values = bb.get_default_baseline_values()
+        
         for i in range(0, len(default_values)):
             currentRow = default_values[i]
             rowCount+=1
             columnCount=0
+            
             for j in range(0, len(currentRow)):
-                input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6) 
-                input.grid(column=columnCount,row=rowCount)
-                input.insert(0, currentRow[j])
+                globals()[f"input_{i}_{j}"] = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6) 
+                globals()[f"input_{i}_{j}"].grid(column=columnCount,row=rowCount)
+                globals()[f"input_{i}_{j}"].insert(0, currentRow[j])
                 columnCount+=1
             #Total volume    
-            label = tk.Label(self, text=(float (currentRow[0]))+ (float (currentRow[1])), font=("Helevicta", 17))
-            label.grid(column=columnCount,row=rowCount)
+            volume_label = tk.Label(self, text=(float (currentRow[0]))+ (float (currentRow[1])), font=("Helevicta", 17))
+            volume_label.grid(column=columnCount,row=rowCount)
             columnCount+=1
             #A_562 (avg)
-            label = tk.Label(self, text=(float(currentRow[3])+ float(currentRow[4]))/2, font=("Helevicta", 17))
-            label.grid(column=columnCount,row=rowCount)
+            avg_label = tk.Label(self, text=(float(currentRow[3])+ float(currentRow[4]))/2, font=("Helevicta", 17))
+            avg_label.grid(column=columnCount,row=rowCount)
         #Add button to update
         rowCount+=1
-        store_ba = tk.Button(self, text="Save baseline", bg='light green', font=("Helevicta", 15), command=lambda: bb.save_modified_baseline())
+        store_ba = tk.Button(self, text="Save baseline", bg='light green', font=("Helevicta", 15), command=lambda: bb.save_modified_baseline(getEntryValues()))
         store_ba.grid(column=0,row=rowCount)
         read_saved_ba = tk.Button(self, text="Last Saved", bg='light green', font=("Helevicta", 15), command=lambda: bb.read_stored_baseline())
         read_saved_ba.grid(column=1,row=rowCount)
         get_default_ba = tk.Button(self, text="Default baseline", bg='light green', font=("Helevicta", 15), command=lambda: bb.get_default_baseline())
         get_default_ba.grid(column=2,row=rowCount)
+
+
+def getEntryValues():
+    rows = [[]]
+    
+    fields = bb.get_baseline_fields()
+    print(fields)
+    print(fields[0])
+    rowCount = 0
+    columnCount = 0
+    for i in range(0, len(fields)):
+        print(i,rowCount,columnCount)
+        rows[rowCount][columnCount] = fields[i]
+        columnCount+=1
+
+    calculated_fields = bb.get_calculated_baseline_fields()
+    for j in range(0,len(calculated_fields)-1):
+        rows[rowCount][columnCount]=calculated_fields[j]
+        columnCount+=1
+
+    default_values = bb.get_default_baseline_values()
+    for i in range(0, 5):
+            rowCount+=1
+            columnCount=0
+            
+            for j in range(0, len(fields)):
+                rows[rowCount][columnCount] = globals()[f"input_{rowCount}_{columnCount}"].get()
+                columnCount+=1
+            for j in range(0, len(calculated_fields)):
+                rows[rowCount][columnCount] = globals()[f"input_{rowCount}_{columnCount}"].get()
+                columnCount+=1
+    return rows
 
 if __name__ == "__main__":
     root = SampleApp()
