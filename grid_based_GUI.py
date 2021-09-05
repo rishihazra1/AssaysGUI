@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.font
 import bradford_assay
+import bradford_baseline as bb
 
 
 class SampleApp(tk.Tk):
@@ -117,56 +118,60 @@ class BradfordAssayBaseline(tk.Frame):
         parent.columnconfigure(3,weight=1)
         parent.columnconfigure(4,weight=1)
         parent.columnconfigure(5,weight=1)       
-        
-        label = tk.Label(self, text="Bradford Assay Baseline", font=controller.title_font)
-        label.grid(column=0,row=1,columnspan=6)
+        parent.columnconfigure(6,weight=1)
+
+        rowCount=0
         home_button = tk.Button(self, text="HOME",
                            command=lambda: controller.show_frame("Home"), bg="sky blue", fg="black", font=("Helevicta", 15))
-        home_button.grid(column=0,row=0)
+        home_button.grid(column=0,row=rowCount)
 
         bradfordAssay_button = tk.Button(self, text="BradfordAssay",
                            command=lambda: controller.show_frame("BradfordAssay"), bg="sky blue", fg="black", font=("Helevicta", 15))
-        bradfordAssay_button.grid(column=1,row=0)
-
-        bsa_label = tk.Label(self, text="1 mg/mL BSA (µL)", font=("Helevicta", 17))
-        bsa_label.grid(column=0,row=2)
-        h2o_label = tk.Label(self, text="H2O (µL)", font=("Helevicta", 17))
-        h2o_label.grid(column=1,row=2)
-        volume_label = tk.Label(self, text="Total volume (µL)", font=("Helevicta", 17))
-        volume_label.grid(column=2,row=2)
-        bsa_mg_label = tk.Label(self, text="BSA (mg/mL)", font=("Helevicta", 17))
-        bsa_mg_label.grid(column=3,row=2)
-        a562_1_label = tk.Label(self, text="A562 (1)", font=("Helevicta", 17))
-        a562_1_label.grid(column=4,row=2)
-        a562_2_label = tk.Label(self, text="A562 (2)", font=("Helevicta", 17))
-        a562_2_label.grid(column=5,row=2)
-
-        bsa_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6) 
-        bsa_input.grid(column=0,row=3)
-        bsa_input.insert(0, "1")
-
-        h2o_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6) 
-        h2o_input.grid(column=1,row=3)
-        h2o_input.insert(0, "2")
-
-        volume_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6) 
-        volume_input.grid(column=2,row=3)
-        volume_input.insert(0, "3")
-
-        bsa_mg_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6) 
-        bsa_mg_input.grid(column=3,row=3)
-        bsa_mg_input.insert(0, "4")
+        bradfordAssay_button.grid(column=1,row=rowCount)
         
-        a562_1_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6) 
-        a562_1_input.grid(column=4,row=3)
-        a562_1_input.insert(0, "5")
+        rowCount+=1
+        label = tk.Label(self, text="Bradford Assay Baseline", font=controller.title_font)
+        label.grid(column=0,row=rowCount,columnspan=6)
 
-        a562_2_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17)) 
-        a562_2_input.grid(column=5,row=3)
-        a562_2_input.insert(0, "6")
+        fields = bb.get_baseline_fields()
+        rowCount+=1
+        columnCount = 0
+        for i in range(0, len(fields)):
+            label = tk.Label(self, text=fields[i], font=("Helevicta", 17))
+            label.grid(column=i,row=rowCount)
+            columnCount+=1
 
-        self.entries = []
-    
+        calculated_fields = bb.get_calculated_baseline_fields()
+        for j in range(0,len(calculated_fields)):
+            label = tk.Label(self, text=calculated_fields[j], font=("Helevicta", 17))
+            label.grid(column=columnCount,row=rowCount)
+            columnCount+=1
+
+        default_values = bb.get_default_baseline_values()
+        for i in range(0, len(default_values)):
+            currentRow = default_values[i]
+            rowCount+=1
+            columnCount=0
+            for j in range(0, len(currentRow)):
+                input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6) 
+                input.grid(column=columnCount,row=rowCount)
+                input.insert(0, currentRow[j])
+                columnCount+=1
+            #Total volume    
+            label = tk.Label(self, text=(float (currentRow[0]))+ (float (currentRow[1])), font=("Helevicta", 17))
+            label.grid(column=columnCount,row=rowCount)
+            columnCount+=1
+            #A_562 (avg)
+            label = tk.Label(self, text=(float(currentRow[3])+ float(currentRow[4]))/2, font=("Helevicta", 17))
+            label.grid(column=columnCount,row=rowCount)
+        #Add button to update
+        rowCount+=1
+        store_ba = tk.Button(self, text="Save baseline", bg='light green', font=("Helevicta", 15), command=lambda: bb.save_modified_baseline())
+        store_ba.grid(column=0,row=rowCount)
+        read_saved_ba = tk.Button(self, text="Last Saved", bg='light green', font=("Helevicta", 15), command=lambda: bb.read_stored_baseline())
+        read_saved_ba.grid(column=1,row=rowCount)
+        get_default_ba = tk.Button(self, text="Default baseline", bg='light green', font=("Helevicta", 15), command=lambda: bb.get_default_baseline())
+        get_default_ba.grid(column=2,row=rowCount)
 
 if __name__ == "__main__":
     root = SampleApp()
