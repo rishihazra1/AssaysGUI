@@ -5,6 +5,7 @@ import bradford_baseline as bb
 
 
 class SampleApp(tk.Tk):
+    #testing
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__( self, *args, **kwargs)
 
@@ -16,7 +17,7 @@ class SampleApp(tk.Tk):
         self.resizable(0,0)
         self.columnconfigure(0,weight=1)
                 
-        container=self
+        container=self  
         self.frames = {}
        
         for F in (Home, BradfordAssay, BradfordAssayBaseline):
@@ -40,7 +41,7 @@ class Home(tk.Frame):
 
         parent.columnconfigure(0,weight=1)
         parent.columnconfigure(1,weight=1)
-        parent.columnconfigure(2,weight=1)
+        parent.columnconfigure(2,weight=1)  
 
 
         label = tk.Label(self, text="Select desired assay", font=controller.title_font)
