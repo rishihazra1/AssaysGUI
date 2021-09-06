@@ -178,35 +178,25 @@ class BradfordAssayBaseline(tk.Frame):
 
 
 def getEntryValues():
-    rows = [[]]
+    table = []
     
-    fields = bb.get_baseline_fields()
-    print(fields)
-    print(fields[0])
-    rowCount = 0
-    columnCount = 0
+    row = []
+    fields = bb.get_baseline_fields()  
     for i in range(0, len(fields)):
-        print(i,rowCount,columnCount)
-        rows[rowCount][columnCount] = fields[i]
-        columnCount+=1
-
-    calculated_fields = bb.get_calculated_baseline_fields()
-    for j in range(0,len(calculated_fields)-1):
-        rows[rowCount][columnCount]=calculated_fields[j]
-        columnCount+=1
+        row.append(fields[i])
+    print(row)
+    table.append(row)
+    print(table)
 
     default_values = bb.get_default_baseline_values()
     for i in range(0, 5):
-            rowCount+=1
-            columnCount=0
-            
-            for j in range(0, len(fields)):
-                rows[rowCount][columnCount] = globals()[f"input_{rowCount}_{columnCount}"].get()
-                columnCount+=1
-            for j in range(0, len(calculated_fields)):
-                rows[rowCount][columnCount] = globals()[f"input_{rowCount}_{columnCount}"].get()
-                columnCount+=1
-    return rows
+        row = []    
+        for j in range(0, len(fields)):
+            row.append(globals()[f"input_{i}_{j}"].get())
+        print(row)
+        table.append(row)
+        print(table)
+    return table
 
 if __name__ == "__main__":
     root = SampleApp()
