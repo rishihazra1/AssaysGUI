@@ -1,35 +1,45 @@
 import bradford_baseline as baseline
+import data_analysis as da
 import input_validation 
 import simple_statistics
 import math
 import tkinter as tk
 
-def bradford_assay_main(master, protein_used, dilution, absorption, output_text):
+def bradford_assay_main(master, protein_used, dilution, absorption, output_text_1, output_text_2):
     try:
-            protein_used = float(protein_used)
+        protein_used = float(protein_used)
     except ValueError:
         print("ERROR -- protein_amount")
-        output_text.configure(text="Invalid protein amount entered. Try again.")
+        output_text_1.configure(text="Invalid protein amount entered. Try again.")
     try:
         dilution = float(dilution)
     except ValueError:
         print("ERROR -- dilution")
-        output_text.configure(text="Invalid dilution entered. Try again.")        
-    baselines = [['20', '0', '1.000', '1.258', '1.155'], ['15', '5', '0.750', '1.083', '1.098'], ['10', '10', '0.500', '0.728', '0.713'], ['5', '15', '0.250', '0.422', '0.402'], ['2.5', '17.5', '0.125', '0.223', '0.214'], ['0', '20', '0.000', '0', '-0.005']]
-    print("protein_used: " + str(protein_used))
-    print("dilution: " + str(dilution))
-    x_terms, y_terms = baseline.calculate_baselines(baselines)
+        output_text_1.configure(text="Invalid dilution entered. Try again.")        
+    
     dilution_factor = (protein_used/20)*dilution
+
+    #default baseline
+    x_terms_1, y_terms_1 = baseline.calculate_baselines(baseline.get_default_baseline_values())
+    display_stats(x_terms_1, y_terms_1, absorption, dilution_factor, output_text_1, "Default Baseline")
+   
+    #modified baseline
+    x_terms_2, y_terms_2 = baseline.calculate_baselines(baseline.read_stored_baseline_without_header())
+    display_stats(x_terms_2, y_terms_2, absorption, dilution_factor, output_text_2, "Stored Baseline")
+
+    da.plot_from_2_arrays(x_terms_1, y_terms_1, x_terms_2, y_terms_2)
+
+def display_stats(x_terms, y_terms, absorption, dilution_factor, output_text, baselineText):
     a, b, c = simple_statistics.get_best_fit_line(x_terms, y_terms)  # values generated through numpy polyfit
     r_squared = simple_statistics.get_r_squared(x_terms, y_terms, a, b, c)
-    print("a = " + str(a) + "\nb = " + str(b) + "\nc = " + str(c))
     try:   
         concentration = ((-b + math.sqrt(b**2 - 4*a*c + 4*a*float(absorption)))/(2*a))/dilution_factor
-        print("protein concentration (mg/mL): " + str(concentration))
-        output_text.configure(text=str(absorption) + "A →  " + str(concentration) + " mg/mL\n" + "r² = " + str(r_squared))     
+        output_text.configure(text=baselineText + str(absorption) + "A →  " + str(concentration) + " mg/mL\n" + "r² = " + str(r_squared))     
     except ValueError:
         print("ERROR -- absorbance")
         output_text.configure(text="Invalid absorption. Try again.") 
+
+
 
     #  features below are to be implemented
     '''
