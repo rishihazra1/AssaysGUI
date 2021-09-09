@@ -31,7 +31,6 @@ def get_default_baseline():
     return table
 
 def override_default_baseline():
-    print("Success")
     shutil.copyfile(last_saved_file_name, default_baseline_file_name)
     return
 
@@ -48,13 +47,12 @@ def create_master_baseline():
 def save_modified_baseline(table):
     #file_name = filedialog.asksaveasfilename(title='Enter file name',defaultextension='.csv', initialfile='standard_assay_'+ datetime.datetime.now().strftime('%m.%d.%Y.%H.%M.%S'))
     #directory_location = filedialog.askdirectory(title='Select  directory location')
-    file_name = 'standard_assay_'+ datetime.datetime.now().strftime('%m.%d.%Y.%H.%M.%S') + '.csv'
-    with open(file_name, 'w', newline='') as csvfile:
+    #file_name = 'standard_assay_'+ datetime.datetime.now().strftime('%m.%d.%Y.%H.%M.%S') + '.csv'
+    with open(last_saved_file_name, 'w', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
         for row in table:
             csvwriter.writerow(row)
-    shutil.copyfile(file_name, last_saved_file_name)
-    print("Saved as " + file_name)
+    #shutil.copyfile(last_saved_file_name, file_name)
     return
 
 def read_stored_baseline():

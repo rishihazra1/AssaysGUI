@@ -5,22 +5,20 @@ import bradford_baseline as bb
 
 
 class SampleApp(tk.Tk):
-    #testing
-    def __init__(self, *args, **kwargs):
-        tk.Tk.__init__( self, *args, **kwargs)
+    def __init__(self, parent):
+        tk.Tk.__init__( self, parent)
+        
+        self.parent=parent
+        self.protocol("WM_DELETE_WINDOW", self.onClosing)
 
         self.title('Assay Calculator, Rishi Hazra')
-        self.title_font = tkinter.font.Font(family='Helvetica', size=30, weight="bold", slant="italic")
-        width= self.winfo_screenwidth()               
-        height= self.winfo_screenheight()               
+        self.title_font = tkinter.font.Font(family='Helvetica', size=30, weight="bold", slant="italic")          
         self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))
         self.resizable(0,0)
         self.columnconfigure(0,weight=1)
                 
         container=self  
         self.frames = {}
-
-        
        
         for F in (Home, BradfordAssay, BradfordAssayBaseline):
             page_name = F.__name__
@@ -34,6 +32,13 @@ class SampleApp(tk.Tk):
         frame = self.frames[page_name]
         frame.tkraise()
 
+    def onClosing(self):
+        if tk.messagebox.askokcancel("Change Default Baseline", "Override default baseline with last saved?"):
+            bb.override_default_baseline()
+            if tk.messagebox.showinfo(title='Default baseline override', message = 'Default baseline overridden with last saved baseline'):
+                self.destroy()
+        else:
+            self.destroy()    
 
 class Home(tk.Frame):
 
@@ -203,17 +208,8 @@ def getEntryValuesWithHeader():
         table.append(row)
     return table
 
-def on_closing():
-    print("test")
-    if tk.messagebox.askokcancel("Change Default Baseline", "Override default baseline with last saved?"):
-        bb.override_default_baseline()
-        if tk.messageboxok.showinfo(title='Default baseline override', message = 'Default baseline overridden with last saved baseline'):
-            root.destroy()
-    root.destroy()    
-
 if __name__ == "__main__":
-    root = SampleApp()
-    print("here")
+    root=SampleApp(None)
     root.mainloop()
-    root.protocol("WM_DELETE_WINDOW", on_closing())
+    
     
