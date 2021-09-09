@@ -31,6 +31,7 @@ def get_default_baseline():
     return table
 
 def override_default_baseline():
+    print("Success")
     shutil.copyfile(last_saved_file_name, default_baseline_file_name)
     return
 

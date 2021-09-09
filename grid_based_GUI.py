@@ -20,8 +20,7 @@ class SampleApp(tk.Tk):
         container=self  
         self.frames = {}
 
-        win = tk.Toplevel(self)
-        win.protocol("WM_DELETE_WINDOW", on_closing())
+        
        
         for F in (Home, BradfordAssay, BradfordAssayBaseline):
             page_name = F.__name__
@@ -205,12 +204,16 @@ def getEntryValuesWithHeader():
     return table
 
 def on_closing():
-        if tk.messagebox.askokcancel("Change Default Baseline", "Do you want to change default baseline?"):
-            bb.override_default_baseline()
-            if tk.messageboxok.showinfo(title='Default baseline override', message = 'Default baseline overridden with last saved baseline'):
-                win.destroy()
-        win.destroy()    
+    print("test")
+    if tk.messagebox.askokcancel("Change Default Baseline", "Override default baseline with last saved?"):
+        bb.override_default_baseline()
+        if tk.messageboxok.showinfo(title='Default baseline override', message = 'Default baseline overridden with last saved baseline'):
+            root.destroy()
+    root.destroy()    
 
 if __name__ == "__main__":
     root = SampleApp()
+    print("here")
     root.mainloop()
+    root.protocol("WM_DELETE_WINDOW", on_closing())
+    
