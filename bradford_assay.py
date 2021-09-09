@@ -25,7 +25,7 @@ def bradford_assay_main(master, protein_used, dilution, absorption, output_text_
    
     #modified baseline
     x_terms_2, y_terms_2 = baseline.calculate_baselines(baseline.read_stored_baseline_without_header())
-    display_stats(x_terms_2, y_terms_2, absorption, dilution_factor, output_text_2, "Stored Baseline")
+    display_stats(x_terms_2, y_terms_2, absorption, dilution_factor, output_text_2, "Last Saved Baseline")
 
     da.plot_from_2_arrays(x_terms_1, y_terms_1, x_terms_2, y_terms_2)
 

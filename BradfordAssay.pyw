@@ -69,7 +69,7 @@ class BradfordAssay(tk.Frame):
         parent.columnconfigure(0,weight=1)
         parent.columnconfigure(1,weight=1)
         parent.columnconfigure(2,weight=1)
-         
+        
 
         label = tk.Label(self, text="Bradford Assay", font=controller.title_font)
         label.grid(column=1,row=0, columnspan=2)
@@ -81,7 +81,8 @@ class BradfordAssay(tk.Frame):
         protein_amount_label.grid(column=1,row=1)
         protein_amount_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17)) 
         protein_amount_input.grid(column=2,row=1)
-        protein_amount_input.insert(0, "5")        
+        protein_amount_input.insert(0, "5")
+        
 
         dilution_label = tk.Label(self, text="Dilution: ", font=("Helevicta", 17))
         dilution_label.grid(column=1,row=2)
@@ -100,6 +101,7 @@ class BradfordAssay(tk.Frame):
         output_text_2.grid(column=3,row=5)
         run_ba = tk.Button(self, text="Get Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: bradford_assay.bradford_assay_main(self, protein_amount_input.get(), dilution_input.get(), absorption_input.get(), output_text_1, output_text_2))
         run_ba.grid(column=2,row=4)
+
         baseline_btn = tk.Button(self, text="Bradford Assay baseline",
                             command=lambda: controller.show_frame("BradfordAssayBaseline"), 
                             bg='light green', font=("Helevicta", 15))  # ba = bradford assay baseline
