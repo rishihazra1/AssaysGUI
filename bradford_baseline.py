@@ -64,9 +64,9 @@ def read_stored_baseline():
             table.append(row)
     return table
 
-def read_stored_baseline_without_header():
+def read_stored_baseline_without_header(file_name):
     table = []
-    with open(last_saved_file_name, 'r') as csvfile:
+    with open(file_name, 'r') as csvfile:
         csvreader = csv.reader(csvfile,delimiter=',')
         for row in csvreader:
             table.append(row)
@@ -82,11 +82,12 @@ def read_stored_baseline_without_header():
 
 baseline_values = [[]]
 def calculate_baselines(baseline_values):
+    print(baseline_values)
     y_average_absorption = []
     x_BSA_concentration = []
     for i in range(0, len(baseline_values)):
         temp_average = (float(baseline_values[i][3]) + float(baseline_values[i][4]))/2  
         y_average_absorption.append(temp_average)
         x_BSA_concentration.append(float(baseline_values[i][2]))
-    
+    print(x_BSA_concentration,y_average_absorption)
     return x_BSA_concentration, y_average_absorption
