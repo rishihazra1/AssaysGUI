@@ -11,21 +11,31 @@ def bradford_assay_main(master, protein_used, dilution, absorption, stored_basel
     except ValueError:
         print("ERROR -- protein_amount")
         stored_baseline_result_text.configure(text="Invalid protein amount entered. Try again.")
+        default_baseline_result_text.configure(text='')
+    
     try:
         dilution = float(dilution)
     except ValueError:
         print("ERROR -- dilution")
-        stored_baseline_result_text.configure(text="Invalid dilution entered. Try again.")        
+        stored_baseline_result_text.configure(text="Invalid dilution entered. Try again.")    
+        default_baseline_result_text.configure(text='')    
     
+    try:   
+        absorption = float(absorption)
+    except ValueError:
+        print("ERROR -- absorption")
+        stored_baseline_result_text.configure(text="Invalid absorption. Try again.") 
+        default_baseline_result_text.configure(text='')
+
     dilution_factor = (protein_used/20)*dilution
 
     #default baseline
     if (default_selected == 1):
-        x_terms_1, y_terms_1 = baseline.calculate_baselines(baseline.read_stored_baseline_without_header(baseline.default_baseline_file_name))
+        x_terms_1, y_terms_1 = calculate_baselines(baseline.read_stored_baseline_without_header(baseline.default_baseline_file_name))
         display_stats(x_terms_1, y_terms_1, absorption, dilution_factor, default_baseline_result_text, "Default Baseline:")
    
     #last saved baseline
-    x_terms_2, y_terms_2 = baseline.calculate_baselines(baseline.read_stored_baseline_without_header(baseline.last_saved_file_name))
+    x_terms_2, y_terms_2 = calculate_baselines(baseline.read_stored_baseline_without_header(baseline.last_saved_file_name))
     display_stats(x_terms_2, y_terms_2, absorption, dilution_factor, stored_baseline_result_text, "Last Saved Baseline:")
 
     if (default_selected ==1):
@@ -38,37 +48,16 @@ def bradford_assay_main(master, protein_used, dilution, absorption, stored_basel
 def display_stats(x_terms, y_terms, absorption, dilution_factor, output_text, baselineText):
     a, b, c = simple_statistics.get_best_fit_line(x_terms, y_terms)  # values generated through numpy polyfit
     r_squared = simple_statistics.get_r_squared(x_terms, y_terms, a, b, c)
-    try:   
-        concentration = ((-b + math.sqrt(b**2 - 4*a*c + 4*a*float(absorption)))/(2*a))/dilution_factor
-        output_text.configure(text=baselineText + '\n' + str(absorption) + "A →  " + str(concentration) + " mg/mL\n" + "r² = " + str(r_squared))     
-    except ValueError:
-        print("ERROR -- absorbance")
-        output_text.configure(text="Invalid absorption. Try again.") 
+    concentration = ((-b + math.sqrt(b**2 - 4*a*c + 4*a*float(absorption)))/(2*a))/dilution_factor
+    output_text.configure(text=baselineText + '\n' + str(absorption) + "A →  " + str(concentration) + " mg/mL\n" + "r² = " + str(r_squared))     
+    
 
-
-
-    #  features below are to be implemented
-    '''
-    use_default = input_validation.get_y_or_n("Use default baselines?")
-    if use_default == "n":
-        print("Program terminated.\n Edit baselines here: " + path)
-        quit()
-    '''
-
-    '''
-    info_correct = input_validation.get_y_or_n("Is the above information correct?")
-    if info_correct == "n":
-        protein_used = input_validation.get_float("Enter the amount of protein used (in µL).\n")    
-        dilution = input_validation.get_float("Enter the dilution.\n")
-    else:
-        protein_used = 5
-        dilution = 0.1
-    dilution_factor = (protein_used/20)*dilution
-    # print("dilution factor: " + str(dilution_factor))
-    '''
-
-    '''
-    a = -0.506713304184884  # values from Excel LINEST function
-    b = 1.773611242973140
-    c = 0.002712554653342
-    '''
+baseline_values = [[]]
+def calculate_baselines(baseline_values):
+    y_average_absorption = []
+    x_BSA_concentration = []
+    for i in range(0, len(baseline_values)):
+        temp_average = (float(baseline_values[i][3]) + float(baseline_values[i][4]))/2  
+        y_average_absorption.append(temp_average)
+        x_BSA_concentration.append(float(baseline_values[i][2]))
+    return x_BSA_concentration, y_average_absorption
