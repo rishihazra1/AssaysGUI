@@ -89,10 +89,14 @@ def plot_single_file(file):
 
 
 def plot_from_arrays(x_array, y_array):  # note that errors can occur due to incorrect data files (data from certain seconds missing from file).
+    plt.xlabel('BSA Concentration')
+    plt.ylabel('Average Absorption')
+    
     x_numpy, y_numpy = convert_to_numpy_float(x_array, y_array)
-    plt.scatter(x_numpy, y_numpy, s=10)
-    plot_best_fit_line(x_numpy, y_numpy)
+    plt.scatter(x_numpy, y_numpy, s=6, marker='.')
+    plot_best_fit_line(x_numpy, y_numpy, "last saved baseline")
 
+    plt.legend(loc='upper left')
     plt.show()
 
 def plot_from_2_arrays(x_array_1, y_array_1, x_array_2, y_array_2):  # note that errors can occur due to incorrect data files (data from certain seconds missing from file).
@@ -105,7 +109,7 @@ def plot_from_2_arrays(x_array_1, y_array_1, x_array_2, y_array_2):  # note that
     
     x_numpy, y_numpy = convert_to_numpy_float(x_array_2, y_array_2)
     plt.scatter(x_numpy, y_numpy, s=6, marker='.')
-    plot_best_fit_line(x_numpy, y_numpy, "stored baseline")
+    plot_best_fit_line(x_numpy, y_numpy, "last saved baseline")
     
     plt.legend(loc='upper left')
     plt.show()

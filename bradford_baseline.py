@@ -42,6 +42,7 @@ def create_master_baseline():
             for row in baselines:
                 csvwriter.writerow(row)
         shutil.copyfile(master_baseline_file_name, default_baseline_file_name)
+        shutil.copyfile(master_baseline_file_name, last_saved_file_name)
     return
 
 def save_modified_baseline(table):
@@ -55,10 +56,10 @@ def save_modified_baseline(table):
     #shutil.copyfile(last_saved_file_name, file_name)
     return
 
-def read_stored_baseline():
+def read_stored_baseline(file_name):
     #file_name = filedialog.askopenfilename(title="Select file", filetypes=(("CSV Files", "*.csv*"), ("All Files", "*.*")))
     table = []
-    with open(last_saved_file_name, 'r') as csvfile:
+    with open(file_name, 'r') as csvfile:
         csvreader = csv.reader(csvfile,delimiter=',')
         for row in csvreader:
             table.append(row)

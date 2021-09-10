@@ -5,36 +5,42 @@ import simple_statistics
 import math
 import tkinter as tk
 
-def bradford_assay_main(master, protein_used, dilution, absorption, output_text_1, output_text_2):
+def bradford_assay_main(master, protein_used, dilution, absorption, stored_baseline_result_text, default_baseline_result_text, default_selected):
     try:
         protein_used = float(protein_used)
     except ValueError:
         print("ERROR -- protein_amount")
-        output_text_1.configure(text="Invalid protein amount entered. Try again.")
+        stored_baseline_result_text.configure(text="Invalid protein amount entered. Try again.")
     try:
         dilution = float(dilution)
     except ValueError:
         print("ERROR -- dilution")
-        output_text_1.configure(text="Invalid dilution entered. Try again.")        
+        stored_baseline_result_text.configure(text="Invalid dilution entered. Try again.")        
     
     dilution_factor = (protein_used/20)*dilution
 
     #default baseline
-    x_terms_1, y_terms_1 = baseline.calculate_baselines(baseline.read_stored_baseline_without_header(baseline.default_baseline_file_name))
-    display_stats(x_terms_1, y_terms_1, absorption, dilution_factor, output_text_1, "Default Baseline")
+    if (default_selected == 1):
+        x_terms_1, y_terms_1 = baseline.calculate_baselines(baseline.read_stored_baseline_without_header(baseline.default_baseline_file_name))
+        display_stats(x_terms_1, y_terms_1, absorption, dilution_factor, default_baseline_result_text, "Default Baseline:")
    
     #last saved baseline
     x_terms_2, y_terms_2 = baseline.calculate_baselines(baseline.read_stored_baseline_without_header(baseline.last_saved_file_name))
-    display_stats(x_terms_2, y_terms_2, absorption, dilution_factor, output_text_2, "Last Saved Baseline")
+    display_stats(x_terms_2, y_terms_2, absorption, dilution_factor, stored_baseline_result_text, "Last Saved Baseline:")
 
-    da.plot_from_2_arrays(x_terms_1, y_terms_1, x_terms_2, y_terms_2)
+    if (default_selected ==1):
+        da.plot_from_2_arrays(x_terms_1, y_terms_1, x_terms_2, y_terms_2)
+    else:
+        default_baseline_result_text.configure(text='')
+        da.plot_from_arrays(x_terms_2, y_terms_2)
+
 
 def display_stats(x_terms, y_terms, absorption, dilution_factor, output_text, baselineText):
     a, b, c = simple_statistics.get_best_fit_line(x_terms, y_terms)  # values generated through numpy polyfit
     r_squared = simple_statistics.get_r_squared(x_terms, y_terms, a, b, c)
     try:   
         concentration = ((-b + math.sqrt(b**2 - 4*a*c + 4*a*float(absorption)))/(2*a))/dilution_factor
-        output_text.configure(text=baselineText + str(absorption) + "A →  " + str(concentration) + " mg/mL\n" + "r² = " + str(r_squared))     
+        output_text.configure(text=baselineText + '\n' + str(absorption) + "A →  " + str(concentration) + " mg/mL\n" + "r² = " + str(r_squared))     
     except ValueError:
         print("ERROR -- absorbance")
         output_text.configure(text="Invalid absorption. Try again.") 

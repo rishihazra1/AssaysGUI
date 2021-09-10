@@ -84,6 +84,11 @@ class BradfordAssay(tk.Frame):
                            command=lambda: controller.show_frame("Home"), bg="sky blue", fg="black", font=("Helevicta", 15))
         home_button.grid(column=0,row=0)
 
+        baseline_btn = tk.Button(self, text="Bradford Assay baseline",
+                            command=lambda: controller.show_frame("BradfordAssayBaseline"), 
+                            bg='light green', font=("Helevicta", 15))  # ba = bradford assay baseline
+        baseline_btn.grid(column=0,row=1)
+
         protein_amount_label = tk.Label(self, text="Enter Protein Amount (µL): ", font=("Helevicta", 17))
         protein_amount_label.grid(column=1,row=1)
         protein_amount_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17)) 
@@ -101,16 +106,14 @@ class BradfordAssay(tk.Frame):
         absorption_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17))
         absorption_input.grid(column=2,row=3)
 
-        output_text_1 = tk.Label(self, text="", font=("Helevicta", 14))
-        output_text_1.grid(column=3,row=4)
-        output_text_2 = tk.Label(self, text="", font=("Helevicta", 14))
-        output_text_2.grid(column=3,row=5)
-        run_ba = tk.Button(self, text="Get Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: bradford_assay.bradford_assay_main(self, protein_amount_input.get(), dilution_input.get(), absorption_input.get(), output_text_1, output_text_2))
+        stored_baseline_result_text = tk.Label(self, text="", font=("Helevicta", 14))
+        stored_baseline_result_text.grid(column=2,row=5)
+        default_baseline_result_text = tk.Label(self, text="", font=("Helevicta", 14))
+        default_baseline_result_text.grid(column=2,row=7)
+        defaultSelected=tk.IntVar()
+        tk.Checkbutton(self, text="Include Default baseline", variable=defaultSelected).grid(row=4, column=3)
+        run_ba = tk.Button(self, text="Get Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: bradford_assay.bradford_assay_main(self, protein_amount_input.get(), dilution_input.get(), absorption_input.get(), stored_baseline_result_text, default_baseline_result_text, defaultSelected.get()))
         run_ba.grid(column=2,row=4)
-        baseline_btn = tk.Button(self, text="Bradford Assay baseline",
-                            command=lambda: controller.show_frame("BradfordAssayBaseline"), 
-                            bg='light green', font=("Helevicta", 15))  # ba = bradford assay baseline
-        baseline_btn.grid(column=2,row=5)
 
         self.entries = []
 
@@ -148,7 +151,7 @@ class BradfordAssayBaseline(tk.Frame):
             label.grid(column=i,row=rowCount)
             columnCount+=1
 
-        default_values = bb.get_default_baseline_values()
+        default_values = bb.read_stored_baseline_without_header(bb.last_saved_file_name)
         for i in range(0, len(default_values)):
             currentRow = default_values[i]
             rowCount+=1
@@ -162,9 +165,9 @@ class BradfordAssayBaseline(tk.Frame):
         rowCount+=1
         store_ba = tk.Button(self, text="Save baseline", bg='light green', font=("Helevicta", 15), command=lambda: bb.save_modified_baseline(getEntryValuesWithHeader()))
         store_ba.grid(column=0,row=rowCount)
-        read_saved_ba = tk.Button(self, text="Last Saved", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline()))
+        read_saved_ba = tk.Button(self, text="Last Saved", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.last_saved_file_name)))
         read_saved_ba.grid(column=1,row=rowCount)
-        get_default_ba = tk.Button(self, text="Default baseline", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.get_default_baseline()))
+        get_default_ba = tk.Button(self, text="Default baseline", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.default_baseline_file_name)))
         get_default_ba.grid(column=2,row=rowCount)
 
 def setEntryValues(frame,table):
