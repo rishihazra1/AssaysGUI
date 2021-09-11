@@ -14,8 +14,8 @@ class SampleApp(tk.Tk):
         self.title('Assay Calculator, Rishi Hazra')
         self.title_font = tkinter.font.Font(family='Helvetica', size=30, weight="bold", slant="italic")          
         self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))
-        self.resizable(0,0)
-        self.columnconfigure(0,weight=1)
+        self.resizable(True, True)
+        self.columnconfigure(0, weight=1)
                 
         container=self  
         self.frames = {}
@@ -52,19 +52,19 @@ class Home(tk.Frame):
 
 
         label = tk.Label(self, text="Select desired assay", font=controller.title_font)
-        label.grid(column=1,row=0,sticky=tk.W)
+        label.grid(column=1,row=0,sticky=tk.W, padx=420, pady=30)
 
         mm_btn = tk.Button(self, text="Michaelis-Menten", 
                             command=lambda: controller.show_frame("MichaelisMenten"), 
-                            fg='blue', bg='light grey', width=20, compound="c", 
+                            fg='blue', bg='maroon', width=20, compound="c", 
                             font=("Helevicta", 30))  # mm = michaelis-menten
-        mm_btn.grid(column=1,row=1,sticky=tk.W)
+   #     mm_btn.grid(column=1,row=1,sticky=tk.W)
 
         ba_btn = tk.Button(self, text="Bradford Assay",
                             command=lambda: controller.show_frame("BradfordAssay"), 
-                            fg='purple', bg='light grey', width=20, compound="c", 
+                            fg='white', bg='maroon', width=20, compound="c", 
                             font=("Helevicta", 30))  # ba = bradford assay
-        ba_btn.grid(column=1,row=1,sticky=tk.W)
+        ba_btn.grid(column=1,row=1)
 
    
 class BradfordAssay(tk.Frame):
@@ -79,41 +79,41 @@ class BradfordAssay(tk.Frame):
          
 
         label = tk.Label(self, text="Bradford Assay", font=controller.title_font)
-        label.grid(column=1,row=0, columnspan=2)
+        label.grid(column=1,row=1, padx=400, pady=30, columnspan=3, sticky=tk.W)
         home_button = tk.Button(self, text="HOME",
                            command=lambda: controller.show_frame("Home"), bg="sky blue", fg="black", font=("Helevicta", 15))
-        home_button.grid(column=0,row=0)
+        home_button.grid(column=0, row=0)
 
-        baseline_btn = tk.Button(self, text="Baseline",
+        baseline_btn = tk.Button(self, text="Modify Baselines",
                             command=lambda: controller.show_frame("BradfordAssayBaseline"), 
-                            bg='sky blue', fg="black", font=("Helevicta", 15))  # ba = bradford assay baseline
-        baseline_btn.grid(column=0,row=1)
+                            bg='yellow', fg="black", font=("Helevicta", 15))  # ba = bradford assay baseline
+        baseline_btn.grid(column=2, row=5, pady=15, sticky=tk.W)
 
-        protein_amount_label = tk.Label(self, text="Enter Protein Amount (µL): ", font=("Helevicta", 17))
-        protein_amount_label.grid(column=1,row=1)
+        protein_amount_label = tk.Label(self, text="Protein Amount (µL): ", font=("Helevicta", 17))
+        protein_amount_label.grid(column=1,row=2, pady=8, sticky=tk.E)
         protein_amount_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17)) 
-        protein_amount_input.grid(column=2,row=1)
+        protein_amount_input.grid(column=2,row=2, padx=15, sticky=tk.W)
         protein_amount_input.insert(0, "5")        
 
         dilution_label = tk.Label(self, text="Dilution: ", font=("Helevicta", 17))
-        dilution_label.grid(column=1,row=2)
+        dilution_label.grid(column=1,row=3, pady=8, sticky=tk.E)
         dilution_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17)) 
-        dilution_input.grid(column=2,row=2)
+        dilution_input.grid(column=2,row=3, padx=15, sticky=tk.W)
         dilution_input.insert(0, ".1")
         
-        absorption_label = tk.Label(self, text="Enter Absorption: ", font=("Helevicta", 17))
-        absorption_label.grid(column=1,row=3)
+        absorption_label = tk.Label(self, text="Absorption: ", font=("Helevicta", 17))
+        absorption_label.grid(column=1,row=4, pady=8, sticky=tk.E)
         absorption_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17))
-        absorption_input.grid(column=2,row=3)
+        absorption_input.grid(column=2,row=4, padx=15, sticky=tk.W)
 
         stored_baseline_result_text = tk.Label(self, text="", font=("Helevicta", 14))
-        stored_baseline_result_text.grid(column=2,row=5)
+        stored_baseline_result_text.grid(column=2,row=8)
         default_baseline_result_text = tk.Label(self, text="", font=("Helevicta", 14))
-        default_baseline_result_text.grid(column=2,row=7)
+        default_baseline_result_text.grid(column=2,row=9)
         defaultSelected=tk.IntVar()
-        tk.Checkbutton(self, text="Include Default baseline", variable=defaultSelected).grid(row=4, column=3)
+        tk.Checkbutton(self, text="Include Default baseline", variable=defaultSelected, font=("Helevicta", 11)).grid(row=6, column=2, sticky=tk.W)
         run_ba = tk.Button(self, text="Calculate Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: bradford_assay.bradford_assay_main(self, protein_amount_input.get(), dilution_input.get(), absorption_input.get(), stored_baseline_result_text, default_baseline_result_text, defaultSelected.get()))
-        run_ba.grid(column=2,row=4)
+        run_ba.grid(column=2,row=7, sticky=tk.W)
 
         self.entries = []
 
@@ -131,24 +131,27 @@ class BradfordAssayBaseline(tk.Frame):
         parent.columnconfigure(4,weight=1)
         
         rowCount=0
+        
+        '''
         home_button = tk.Button(self, text="HOME",
                            command=lambda: controller.show_frame("Home"), bg="sky blue", fg="black", font=("Helevicta", 15))
         home_button.grid(column=0,row=rowCount)
 
-        bradfordAssay_button = tk.Button(self, text="BradfordAssay",
-                           command=lambda: controller.show_frame("Bradford Assay"), bg="sky blue", fg="black", font=("Helevicta", 15))
-        bradfordAssay_button.grid(column=1,row=rowCount)
+        '''
+        bradfordAssay_button = tk.Button(self, text="Back",
+                           command=lambda: controller.show_frame("BradfordAssay"), bg="sky blue", fg="black", font=("Helevicta", 15))
+        bradfordAssay_button.grid(column=0,row=rowCount)
         
         rowCount+=1
-        label = tk.Label(self, text="Bradford Assay Baseline", font=controller.title_font)
-        label.grid(column=0,row=rowCount,columnspan=6)
+        label = tk.Label(self, text="Bradford Assay Baselines", font=controller.title_font)
+        label.grid(column=1, row=rowCount, padx=200, pady=10, columnspan=6)
 
         fields = bb.get_baseline_fields()
         rowCount+=1
         columnCount = 0
         for i in range(0, len(fields)):
             label = tk.Label(self, text=fields[i], font=("Helevicta", 17))
-            label.grid(column=i,row=rowCount)
+            label.grid(column=i,row=rowCount, padx=15)
             columnCount+=1
 
         default_values = bb.read_stored_baseline_without_header(bb.last_saved_file_name)
@@ -163,14 +166,14 @@ class BradfordAssayBaseline(tk.Frame):
                 columnCount+=1
         #Add button to update
         rowCount+=1
-        store_ba = tk.Button(self, text="Save", bg='light green', font=("Helevicta", 15), command=lambda: bb.save_modified_baseline(getEntryValuesWithHeader()))
-        store_ba.grid(column=0,row=rowCount)
-        read_saved_ba = tk.Button(self, text="Last saved", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.last_saved_file_name)))
-        read_saved_ba.grid(column=1,row=rowCount)
-        get_default_ba = tk.Button(self, text="Default", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.default_baseline_file_name)))
-        get_default_ba.grid(column=2,row=rowCount)
-        restore_ba = tk.Button(self, text="Restore default from master", bg='dark red', font=("Helevicta", 15), command=lambda: bb.restore_default_baseline())
-        restore_ba.grid(column=3,row=rowCount)
+        store_ba = tk.Button(self, text="Save ", bg='light green', font=("Helevicta", 20), command=lambda: bb.save_modified_baseline(getEntryValuesWithHeader()))
+        store_ba.grid(column=0,row=rowCount, pady=15)
+        read_saved_ba = tk.Button(self, text="Show Last Saved", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.last_saved_file_name)))
+        read_saved_ba.grid(column=5,row=3, padx=30)
+        get_default_ba = tk.Button(self, text="Show Default", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.default_baseline_file_name)))
+        get_default_ba.grid(column=5,row=4, padx=30, pady=8)
+        restore_ba = tk.Button(self, text="Restore Default with master", bg='dark red', fg="white", font=("Helevicta", 15), command=lambda: bb.restore_default_baseline())
+        restore_ba.grid(column=5, pady=50, row=rowCount+1)
 
 def setEntryValues(frame,table):
     row = []
