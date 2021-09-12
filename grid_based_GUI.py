@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.font
 import bradford_assay
 import bradford_baseline as bb
+import functools
 
 
 class SampleApp(tk.Tk):
@@ -9,7 +10,7 @@ class SampleApp(tk.Tk):
         tk.Tk.__init__( self, parent)
         
         self.parent=parent
-        self.protocol("WM_DELETE_WINDOW", self.onClosing)
+        #self.protocol("WM_DELETE_WINDOW", self.onClosing)
 
         self.title('Assay Calculator, Rishi Hazra')
         self.title_font = tkinter.font.Font(family='Helvetica', size=30, weight="bold", slant="italic")          
@@ -50,8 +51,7 @@ class Home(tk.Frame):
         parent.columnconfigure(0,weight=1)
         parent.columnconfigure(1,weight=1)
         parent.columnconfigure(2,weight=1)  
-
-
+        
         label = tk.Label(self, text="Select desired assay", font=controller.title_font)
         label.grid(column=1,row=0,sticky=tk.W, padx=420, pady=30)
 
@@ -77,10 +77,11 @@ class BradfordAssay(tk.Frame):
         parent.columnconfigure(0,weight=1)
         parent.columnconfigure(1,weight=1)
         parent.columnconfigure(2,weight=1)
+        parent.columnconfigure(3,weight=1)  
          
 
         label = tk.Label(self, text="Bradford Assay", font=controller.title_font)
-        label.grid(column=1,row=1, padx=400, pady=30, columnspan=3, sticky=tk.W)
+        label.grid(column=1,row=1, padx=40, pady=10, columnspan=30, sticky=tk.W)
         home_button = tk.Button(self, text="HOME",
                            command=lambda: controller.show_frame("Home"), bg="sky blue", fg="black", font=("Helevicta", 15))
         home_button.grid(column=0, row=0)
@@ -107,21 +108,33 @@ class BradfordAssay(tk.Frame):
         absorption_input = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17))
         absorption_input.grid(column=2,row=4, padx=15, sticky=tk.W)
 
+        defaultSelected=tk.IntVar()
+        doPlot=tk.IntVar()
+
+        frame = tk.Frame(self)
+        frame.columnconfigure(0, weight=1)
+        frame.columnconfigure(0, weight=3)
+        tk.Checkbutton(frame, text="Include Default baseline", variable=defaultSelected, font=("Helevicta", 11)).grid(column=0, row=0)
+        tk.Checkbutton(frame, text="Plot", variable=doPlot, font=("Helevicta", 11)).grid(column=1, row=0)
+        frame.grid(column=3,row=7)
+        
         stored_baseline_result_text = tk.Label(self, text="", font=("Helevicta", 20))
         stored_baseline_result_text.grid(column=2,row=8, pady=15)
         default_baseline_result_text = tk.Label(self, text="", font=("Helevicta", 20))
         default_baseline_result_text.grid(column=2,row=9, pady=15)
-        defaultSelected=tk.IntVar()
-        doPlot=tk.IntVar()
-        tk.Checkbutton(self, text="Include Default baseline", variable=defaultSelected, font=("Helevicta", 11)).grid(row=6, column=2, sticky=tk.W)
-        tk.Checkbutton(self, text="Plot", variable=doPlot, font=("Helevicta", 11)).grid(row=7, column=3, sticky=tk.W)
+
         run_ba = tk.Button(self, text="Calculate Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: bradford_assay.bradford_assay_main(self, protein_amount_input.get(), dilution_input.get(), absorption_input.get(), stored_baseline_result_text, default_baseline_result_text, defaultSelected.get(),doPlot.get()))
         run_ba.grid(column=2,row=7, sticky=tk.W)
 
         self.entries = []
 
 class BradfordAssayBaseline(tk.Frame):
-                   
+    
+    global fileSaved
+    global entryChanged
+    entryChanged=False       
+    fileSaved=False   
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -140,11 +153,12 @@ class BradfordAssayBaseline(tk.Frame):
                            command=lambda: controller.show_frame("Home"), bg="sky blue", fg="black", font=("Helevicta", 15))
         home_button.grid(column=0,row=rowCount)
 
-        '''
-        bradfordAssay_button = tk.Button(self, text="Back",
-                           command=lambda: controller.show_frame("BradfordAssay"), bg="sky blue", fg="black", font=("Helevicta", 15))
+        '''   
+        message_text = tk.Label(self, text="", font=("Helevicta", 20))
+        bradfordAssay_button = tk.Button(self, text="Back", bg="sky blue", fg="black", font=("Helevicta", 15),
+                           command=lambda: handle_unsaved_changes(self, controller, message_text))
         bradfordAssay_button.grid(column=0,row=rowCount)
-        
+
         rowCount+=1
         label = tk.Label(self, text="Bradford Assay Baselines", font=controller.title_font)
         label.grid(column=1, row=rowCount, padx=200, pady=10, columnspan=6)
@@ -166,22 +180,57 @@ class BradfordAssayBaseline(tk.Frame):
                 globals()[f"input_{i}_{j}"] = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6)
                 globals()[f"input_{i}_{j}"].grid(column=columnCount,row=rowCount)
                 globals()[f"input_{i}_{j}"].insert(0, currentRow[j])
+                globals()[f"input_{i}_{j}"].bind('<Key>', functools.partial(trackChanges, param=message_text))
                 columnCount+=1
         
         #Add button to update
         rowCount+=1
         
-        message_text = tk.Label(self, text="", font=("Helevicta", 20))
         message_text.grid(column=1, columnspan=4, row=rowCount, pady=15)
 
-        store_ba = tk.Button(self, text="Save ", bg='light green', font=("Helevicta", 20), command=lambda: bb.save_modified_baseline(getEntryValuesWithHeader(),message_text))
+        store_ba = tk.Button(self, text="Save ", bg='light green', font=("Helevicta", 20), command=lambda: handle_modified_baseline(message_text))
         store_ba.grid(column=0,row=rowCount, pady=15)
-        read_saved_ba = tk.Button(self, text="Show Last Saved", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.last_saved_file_name,message_text)))
+        read_saved_ba = tk.Button(self, text="Show Last Saved", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.last_saved_file_name, message_text)))
         read_saved_ba.grid(column=5,row=3, padx=30)
-        get_default_ba = tk.Button(self, text="Show Default", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.default_baseline_file_name,message_text)))
+        get_default_ba = tk.Button(self, text="Show Default", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.default_baseline_file_name, message_text)))
         get_default_ba.grid(column=5,row=4, padx=30, pady=8)
         restore_ba = tk.Button(self, text="Restore Default with master", bg='dark red', fg="white", font=("Helevicta", 15), command=lambda: bb.restore_default_baseline(message_text))
         restore_ba.grid(column=5, pady=50, row=rowCount+1)
+
+def trackChanges(event, param):
+    global entryChanged
+    entryChanged=True
+    param.configure(text="") 
+
+
+def handle_unsaved_changes(self, controller, message_text):
+    global entryChanged
+    global fileSaved
+
+    if(entryChanged):
+        if (tk.messagebox.askokcancel("Save changes", "Some values are changed in the grid. Do you want to save the baseline?")):
+            handle_modified_baseline(message_text) 
+        else:
+            setEntryValues(self,bb.read_stored_baseline(bb.last_saved_file_name, message_text))
+        entryChanged = False  
+         
+    if(fileSaved):
+        if (tk.messagebox.askokcancel("Default Baseline", "File saved. Override default baseline with last saved?")):
+            bb.override_default_baseline()
+            tk.messagebox.showinfo(title='Default baseline override', message = 'Default baseline overridden with last saved baseline') 
+        
+        fileSaved = False
+
+    controller.show_frame("BradfordAssay")
+
+def handle_modified_baseline(message_text):
+    global fileSaved
+    global entryChanged
+
+    bb.save_modified_baseline(getEntryValuesWithHeader(),message_text)
+    
+    fileSaved=True
+    entryChanged=False
 
 def setEntryValues(frame,table):
     row = []
