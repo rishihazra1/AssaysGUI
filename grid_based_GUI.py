@@ -4,7 +4,6 @@ import bradford_assay
 import bradford_baseline as bb
 import functools
 
-
 class SampleApp(tk.Tk):
     def __init__(self, parent):
         tk.Tk.__init__( self, parent)
