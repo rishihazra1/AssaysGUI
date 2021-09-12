@@ -33,12 +33,13 @@ class SampleApp(tk.Tk):
         frame.tkraise()
 
     def onClosing(self):
-        if tk.messagebox.askokcancel("Change Default Baseline", "Override default baseline with last saved?"):
+        if (tk.messagebox.askokcancel("Change Default Baseline", "Override default baseline with last saved?")):
             bb.override_default_baseline()
             if tk.messagebox.showinfo(title='Default baseline override', message = 'Default baseline overridden with last saved baseline'):
                 self.destroy()
         else:
-            self.destroy()    
+            self.destroy()            
+        
 
 class Home(tk.Frame):
 
@@ -111,8 +112,10 @@ class BradfordAssay(tk.Frame):
         default_baseline_result_text = tk.Label(self, text="", font=("Helevicta", 20))
         default_baseline_result_text.grid(column=2,row=9, pady=15)
         defaultSelected=tk.IntVar()
+        doPlot=tk.IntVar()
         tk.Checkbutton(self, text="Include Default baseline", variable=defaultSelected, font=("Helevicta", 11)).grid(row=6, column=2, sticky=tk.W)
-        run_ba = tk.Button(self, text="Calculate Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: bradford_assay.bradford_assay_main(self, protein_amount_input.get(), dilution_input.get(), absorption_input.get(), stored_baseline_result_text, default_baseline_result_text, defaultSelected.get()))
+        tk.Checkbutton(self, text="Plot", variable=doPlot, font=("Helevicta", 11)).grid(row=7, column=3, sticky=tk.W)
+        run_ba = tk.Button(self, text="Calculate Protein Concentration", bg='light green', font=("Helevicta", 15), command=lambda: bradford_assay.bradford_assay_main(self, protein_amount_input.get(), dilution_input.get(), absorption_input.get(), stored_baseline_result_text, default_baseline_result_text, defaultSelected.get(),doPlot.get()))
         run_ba.grid(column=2,row=7, sticky=tk.W)
 
         self.entries = []
@@ -123,7 +126,7 @@ class BradfordAssayBaseline(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         bb.create_master_baseline()
-
+    
         parent.columnconfigure(0,weight=1)
         parent.columnconfigure(1,weight=1)
         parent.columnconfigure(2,weight=1)
@@ -160,19 +163,24 @@ class BradfordAssayBaseline(tk.Frame):
             rowCount+=1
             columnCount=0
             for j in range(0, len(currentRow)):
-                globals()[f"input_{i}_{j}"] = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6) 
+                globals()[f"input_{i}_{j}"] = tk.Entry(self, bg="light grey", fg="black", bd="3", font=("Helevicta", 17), width=6)
                 globals()[f"input_{i}_{j}"].grid(column=columnCount,row=rowCount)
                 globals()[f"input_{i}_{j}"].insert(0, currentRow[j])
                 columnCount+=1
+        
         #Add button to update
         rowCount+=1
-        store_ba = tk.Button(self, text="Save ", bg='light green', font=("Helevicta", 20), command=lambda: bb.save_modified_baseline(getEntryValuesWithHeader()))
+        
+        message_text = tk.Label(self, text="", font=("Helevicta", 20))
+        message_text.grid(column=1, columnspan=4, row=rowCount, pady=15)
+
+        store_ba = tk.Button(self, text="Save ", bg='light green', font=("Helevicta", 20), command=lambda: bb.save_modified_baseline(getEntryValuesWithHeader(),message_text))
         store_ba.grid(column=0,row=rowCount, pady=15)
-        read_saved_ba = tk.Button(self, text="Show Last Saved", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.last_saved_file_name)))
+        read_saved_ba = tk.Button(self, text="Show Last Saved", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.last_saved_file_name,message_text)))
         read_saved_ba.grid(column=5,row=3, padx=30)
-        get_default_ba = tk.Button(self, text="Show Default", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.default_baseline_file_name)))
+        get_default_ba = tk.Button(self, text="Show Default", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.default_baseline_file_name,message_text)))
         get_default_ba.grid(column=5,row=4, padx=30, pady=8)
-        restore_ba = tk.Button(self, text="Restore Default with master", bg='dark red', fg="white", font=("Helevicta", 15), command=lambda: bb.restore_default_baseline())
+        restore_ba = tk.Button(self, text="Restore Default with master", bg='dark red', fg="white", font=("Helevicta", 15), command=lambda: bb.restore_default_baseline(message_text))
         restore_ba.grid(column=5, pady=50, row=rowCount+1)
 
 def setEntryValues(frame,table):
