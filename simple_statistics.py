@@ -1,12 +1,12 @@
-import numpy as np
+from numpy import array, polyfit
 
 x_terms = []
 y_terms = []
 
 def get_best_fit_line(x_terms, y_terms):
-    x = np.array(x_terms)
-    y = np.array(y_terms)
-    a, b, c = np.polyfit(x, y, 2)
+    x = array(x_terms)
+    y = array(y_terms)
+    a, b, c = polyfit(x, y, 2)
     return a, b, c
 
 def get_r_squared(x_terms, y_terms, a, b, c):

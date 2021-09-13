@@ -1,9 +1,7 @@
 import bradford_baseline as baseline
 import data_analysis as da
-import input_validation 
 import simple_statistics
-import math
-import tkinter as tk
+from math import sqrt
 
 def bradford_assay_main(master, protein_used, dilution, absorption, stored_baseline_result_text, default_baseline_result_text, default_selected, doPlot):
     try:
@@ -50,7 +48,7 @@ def bradford_assay_main(master, protein_used, dilution, absorption, stored_basel
 def display_stats(x_terms, y_terms, absorption, dilution_factor, output_text, baselineText):
     a, b, c = simple_statistics.get_best_fit_line(x_terms, y_terms)  # values generated through numpy polyfit
     r_squared = simple_statistics.get_r_squared(x_terms, y_terms, a, b, c)
-    concentration = ((-b + math.sqrt(b**2 - 4*a*c + 4*a*float(absorption)))/(2*a))/dilution_factor
+    concentration = ((-b + sqrt(b**2 - 4*a*c + 4*a*float(absorption)))/(2*a))/dilution_factor
     output_text.configure(text=baselineText + '\n' + str(round(absorption,4)) + "A →  " + str(round(concentration,4))+ " mg/mL\n" + "r² = " + str(round(r_squared,4)))     
     
 
