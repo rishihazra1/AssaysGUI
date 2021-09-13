@@ -51,7 +51,7 @@ class Home(tk.Frame):
         parent.columnconfigure(1,weight=1)
         parent.columnconfigure(2,weight=1)  
         
-        label = tk.Label(self, text="Select desired assay", font=controller.title_font)
+        label = tk.Label(self, text="Select Desired Assay", font=controller.title_font)
         label.grid(column=1,row=0,sticky=tk.W, padx=420, pady=30)
 
         mm_btn = tk.Button(self, text="Michaelis-Menten", 
@@ -113,8 +113,8 @@ class BradfordAssay(tk.Frame):
         frame = tk.Frame(self)
         frame.columnconfigure(0, weight=1)
         frame.columnconfigure(0, weight=3)
-        tk.Checkbutton(frame, text="Include Default baseline", variable=defaultSelected, font=("Helevicta", 11)).grid(column=0, row=0)
-        tk.Checkbutton(frame, text="Plot", variable=doPlot, font=("Helevicta", 11)).grid(column=1, row=0)
+        tk.Checkbutton(frame, text="Include Default Baseline", variable=defaultSelected, font=("Helevicta", 11)).grid(column=0, row=0)
+        tk.Checkbutton(frame, text="Show Plot", variable=doPlot, font=("Helevicta", 11)).grid(column=1, row=0)
         frame.grid(column=3,row=7)
         
         stored_baseline_result_text = tk.Label(self, text="", font=("Helevicta", 20))
@@ -193,7 +193,7 @@ class BradfordAssayBaseline(tk.Frame):
         read_saved_ba.grid(column=5,row=3, padx=30)
         get_default_ba = tk.Button(self, text="Show Default", bg='light green', font=("Helevicta", 15), command=lambda: setEntryValues(self,bb.read_stored_baseline(bb.default_baseline_file_name, message_text)))
         get_default_ba.grid(column=5,row=4, padx=30, pady=8)
-        restore_ba = tk.Button(self, text="Restore Default with master", bg='dark red', fg="white", font=("Helevicta", 15), command=lambda: bb.restore_default_baseline(message_text))
+        restore_ba = tk.Button(self, text="Restore Default With Master", bg='dark red', fg="white", font=("Helevicta", 15), command=lambda: bb.restore_default_baseline(message_text))
         restore_ba.grid(column=5, pady=50, row=rowCount+1)
 
 def trackChanges(event, param):
@@ -207,7 +207,7 @@ def handle_unsaved_changes(self, controller, message_text):
     global fileSaved
 
     if(entryChanged):
-        if (tk.messagebox.askokcancel("Save changes", "Some values are changed in the grid. Do you want to save the baseline?")):
+        if (tk.messagebox.askokcancel("Save changes?", "Some changes have not been saved. Save these changes?")):
             handle_modified_baseline(message_text) 
         else:
             setEntryValues(self,bb.read_stored_baseline(bb.last_saved_file_name, message_text))
