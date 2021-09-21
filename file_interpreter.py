@@ -1,8 +1,8 @@
-import csv
-from tkinter import filedialog 
+from csv import reader
+from tkinter.filedialog import askopenfilenames
 
 def request_file():
-    path =  filedialog.askopenfilenames(title="Select file.", filetypes=(("CSV Files", "*.csv*"), ("All Files", "*.*")))
+    path =  askopenfilenames(title="Select file.", filetypes=(("CSV Files", "*.csv*"), ("All Files", "*.*")))
     print(path)
     return path
 
@@ -12,7 +12,7 @@ def read_file(csv_file):
     first_column = []
     second_column = []
     with open(csv_file) as current_file:
-        csv_reader = csv.reader(current_file, delimiter=',')
+        csv_reader = reader(current_file, delimiter=',')
         for row in csv_reader:
             rows.append(row)
         index = 0
